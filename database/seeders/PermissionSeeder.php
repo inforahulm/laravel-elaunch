@@ -82,6 +82,23 @@ class PermissionSeeder extends Seeder
                 'name' => 'permission_create',
             ],
 
+            [
+                'name' => 'employees_access',
+            ],
+
+            [
+                'name' => 'posts_access',
+            ],
+
+            [
+                'name' => 'blogs_access',
+            ],
+
+            [
+                'name' => 'books_access',
+            ],
+
+
         ];
 
         foreach($permissions as $permission){

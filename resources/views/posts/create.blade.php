@@ -48,14 +48,3 @@
         </div>
     </div>
 @endsection
-@section('script')
-<script>
-    $(document).ready(function() {
-    $('.employee').select2({
-        placeholder: "Select an option",
-        allowClear: true 
-    });
-});
-</script>
-    
-@endsection

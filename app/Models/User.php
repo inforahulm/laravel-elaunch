@@ -49,12 +49,11 @@ class User extends Authenticatable
 
     public function getPermissionsAttribute()
     {
-        $permissions = [];
-        $role =  $this->role()->first();
-        if (!empty($role)) {
-            $permissions = $role->permissions()->pluck('name')->toArray();
+        $permissions=[];
+        if(!empty($this->role()->first())){
+           $permissions=$this->role()->first()->permissions()->pluck('name')->toArray();
         }
         return $permissions;
     }
-
+    
 }

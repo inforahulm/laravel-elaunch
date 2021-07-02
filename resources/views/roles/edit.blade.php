@@ -27,7 +27,7 @@
                     <div class="col-md-6" id="permissions-select">
                         <select name="permissions[]" id="permissions" class="permissions form-control" multiple>
                             @foreach ($permissions as $id => $permission)
-                             <option value="{{ $id }}"{{ (in_array($id, old('permissions', [])) || $role->permissions->contains($id)) ? 'selected' : '' }}>{{ $permission }}</option> --}}>{{ $permission }}</option> 
+                             <option value="{{ $id }}"{{ (in_array($id, old('permissions', [])) || $role->permissions->contains($id)) ? 'selected' : '' }}>{{ $permission }}</option> 
                             @endforeach
                         </select>
            

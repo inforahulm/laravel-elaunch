@@ -13,8 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeMail;
-
-
+use App\Models\Permission;
 
 class UserController extends Controller
 {
@@ -25,9 +24,9 @@ class UserController extends Controller
      * @return void
      * @throws \Exception
      */
-    public function index(UsersDataTable $dataTable)
+    public function index()
     {
-        $users = User::with('role')->get();      
+        $users = User::with('role')->get();
         return view('users.index', compact('users'));
     }
 

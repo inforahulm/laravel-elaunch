@@ -12,7 +12,10 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js')
-    .js('resources/js/users/users.js',
-    'public/assets/js/users/users.js')
+    .js('resources/js/employee/employee.js',
+    'public/js/employee/employee.js')
+    .js('resources/js/blog/blog.js','public/js/blog/blog.js')
+    .js('resources/js/post/post.js','public/js/post/post.js')
+    .js('resources/js/book/book.js','public/js/book/book.js')
     .sass('resources/sass/app.scss', 'public/css')
     .sourceMaps();

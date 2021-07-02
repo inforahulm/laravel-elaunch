@@ -1,11 +1,11 @@
-
 $(document).ready(function () {
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
-    $(".delete").on('click', function () {
+    $(".post_delete").on('click', function () {
         var id = $(this).data("id");
         Swal.fire({
             title: 'Are you sure?',
@@ -19,18 +19,26 @@ $(document).ready(function () {
             if (result.isConfirmed) {
                 $.ajax({
                     type: "DELETE",
-                    url: Url_Employee_index + '/' + id,
+                    url: Url_Post_index + '/' + id,
                     success: function (response) {
-                        $('#employee' + id).remove()
+                        $('#post' + id).remove()
                         Swal.fire(
                             'Deleted!',
                             'Your file has been deleted.',
                             'success'
                         )
                         console.log(response)
+                    },
+                    error: function (data) {
+                        console.log('Error:', data);
                     }
                 });
             }
-        });
+        })
+    });
+/** create post */
+    $('.employee').select2({
+        placeholder: "Select an option",
+        allowClear: true 
     });
 });

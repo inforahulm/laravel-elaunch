@@ -18,7 +18,7 @@
 
                             @foreach ($roles as $id => $role)
                                 <option value="{{$id}}" {{ (old('role_id',$user->role->id ?? "") == $id ) ? 'selected' : '' }}>{{$role}}</option>
-                            @endforeach
+                                @endforeach
                         </select>
 
                         @error('role_id')
@@ -67,7 +67,6 @@
             </form>
         </div>
     </div>
-
 @endsection
 @section('script')
 <script>

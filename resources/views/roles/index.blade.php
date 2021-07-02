@@ -4,11 +4,11 @@
 <div class="card">
     <x-alert/>
     <div class="card-header">{{ __('Role List') }}</div>
- <div class="card-body">
+    <div class="card-body">
 
-         
+        @if(in_array('role_create',getUserPermissions())) 
         <a href="{{ route('roles.create') }}" class="btn btn-primary">Add New Role</a>
-
+        @endif
             <table class="table table-borderless table-hover">
                         <tr class="bg-info text-light">
                             <th class="text-center">ID</th>
@@ -20,14 +20,19 @@
                         <td class="text-center">{{$role->id}}</td>
                         <td>{{$role->title}}</td>
                         <td>
-
+                            @if(in_array('role_show',getUserPermissions())) 
                             <a href="{{ route('roles.show', $role->id) }}" class="btn btn-sm btn-success">View</a>
-                             <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                             <form action="{{ route('roles.destroy', $role->id) }}" class="d-inline-block" method="post">
+                            @endif
+                            @if(in_array('role_edit',getUserPermissions())) 
+                            <a href="{{ route('roles.edit', $role->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                            @endif
+                            @if(in_array('role_delete',getUserPermissions())) 
+                            <form action="{{ route('roles.destroy', $role->id) }}" class="d-inline-block" method="post">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
                             </form>
+                            @endif
                          </td>
                     </tr>
                     @empty

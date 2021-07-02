@@ -16,10 +16,10 @@ class UserSeeder extends Seeder
     {
         User::create([
             'name' => 'Admin',
-            'email' => 'admin@gamil.com',
+            'email' => 'admin@gmail.com',
             'password' => bcrypt('password'),
             'otp_code'=>'1234',
-            'role_id' => '1'
+            'role_id' => 1
         ]);
 
     }

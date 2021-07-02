@@ -121,10 +121,19 @@
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap4.min.js"></script>
 <script src="/vendor/datatables/buttons.server-side.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script src="{{ asset('assets/js/users/users.js') }}"></script>
+<script src="{{ asset('js/employee/employee.js') }}"></script>
+<script src="{{ asset('js/blog/blog.js') }}"></script>
+<script src="{{ asset('js/post/post.js') }}"></script>
+<script src="{{ asset('js/book/book.js') }}"></script>
+
 <script>
-    let Url = "{{ route('employees.index') }}";
+    let Url_Employee_index = "{{ route('employees.index') }}"
+    let Url_Blog_index ="{{route('blogs.index')}}"
+    let Url_Post_index = "{{route('posts.index')}}"
+    let Url_Book_Store="{{route('books.store')}}"
+    let Url_Book_index ="{{route('books.index')}}"
 </script>
+
 </html>
 @yield('script')
 

@@ -65,6 +65,3 @@
 </script>
     
 @endsection
-{{-- @foreach ($permissions as $id => $permission)
-<option value="{{ $id }}" {{ (in_array($id, old('permissions', []))) ? 'selected' : '' }}>{{ $permission }}</option>
-@endforeach --}}

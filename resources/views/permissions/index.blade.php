@@ -8,9 +8,9 @@
         <div class="card-header">{{ __('Permissions List') }}</div>
         <div class="card-body">
 
-            @can('permission_create')
+            @if(in_array('permission_create',getUserPermissions())) 
             <a href="{{ route('permissions.create') }}" class="btn btn-primary">Add New Permission</a>
-            @endcan
+            @endif
             
                 <table class="table table-borderless table-hover">
                             <tr class="bg-info text-light">
@@ -24,12 +24,16 @@
                             <td class="text-center">{{$permission->id}}</td>
                             <td>{{$permission->name}}</td>
                             <td>
-                                 <a href="{{ route('permissions.edit', $permission->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                                 <form action="{{ route('permissions.destroy', $permission->id) }}" class="d-inline-block" method="post">
+                                @if(in_array('permission_edit',getUserPermissions())) 
+                                <a href="{{ route('permissions.edit', $permission->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                @endif
+                                @if(in_array('permission_delete',getUserPermissions()))
+                                <form action="{{ route('permissions.destroy', $permission->id) }}" class="d-inline-block" method="post">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
                                 </form>
+                                @endif
                              </td>
                         </tr>
                         @empty
