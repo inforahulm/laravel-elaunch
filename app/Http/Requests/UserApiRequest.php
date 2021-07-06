@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UserRequest extends FormRequest
+class UserApiRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +26,10 @@ class UserRequest extends FormRequest
     public function rules()
     {
         return [
+            'auth-type'=>['required',Rule::in([1,2])],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
 }
-

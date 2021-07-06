@@ -15,19 +15,25 @@ use App\Http\Controllers\TestController;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 Route::get('/first_api',[ApiController::class,'FirstAPi']);
 Route::get('/second_api/{id}',[ApiController::class,'SecondAPi']);
 Route::post('/post_api',[ApiController::class,'PostAPi']);
-Route::get('/lists',[ApiController::class,'list']);
+
 
 Route::post('/register',[ApiController::class,'register']); 
 
 Route::post('/login',[ApiController::class,'login']);
 Route::get('/login',[ApiController::class,'login'])->name('login');
-Route::middleware('auth:api')->get('/lists',[ApiController::class,'list']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::get('/lists',[ApiController::class,'list']);
+    Route::get('/logout',[ApiController::class,'logout']);
+    Route::get('/user',[ApiController::class,'user']);
+
+});
 
 Route::get('/test',[TestController::class,'index']); 
 Route::post('/test',[TestController::class,'store']);

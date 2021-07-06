@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserApiRequest;
 use Illuminate\Http\Request;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
-use Validator;
+use App\Mail\WelcomeMail;
 
 
 class ApiController extends Controller
@@ -52,28 +55,21 @@ class ApiController extends Controller
 
         ////// PASSPORT LOGIN & REGISTER /////////////
 
-        public function register(Request $request){ 
+        public function register(UserApiRequest $request){ 
 
-            $validator = Validator::make($request->all(),[
-                'name'=>'required',
-                'email'=>'required|email',
-                'password'=>'required',
-                'c_password'=>'required|same:password'
+            $user= User::create([
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'password' => Hash::make($request['password']),
+                'otp_code' => random_int(1000, 9999),
+                
             ]);
-    
-            if($validator->fails()){
-                return response()->json($validator->errors(),202);
-            }
-            $input = $request->all();
-            $input['password'] = bcrypt($input['password']);
-    
-            $user = User::create($input);
-    
-            $responseArray = [];
-            $responseArray['token'] = $user->createToken('MyApp')->accessToken;
-            $responseArray['name'] = $user->name;
+            Mail::to($request['email'])->send(new WelcomeMail($user));
+
+            return response()->json([
+                'message' => 'Successfully created user and Mail send!'
+            ], 201);
             
-            return response()->json($responseArray,200);  
         }
     
         /// login //////
@@ -81,9 +77,7 @@ class ApiController extends Controller
         public function login(Request $request){ 
             if(Auth::attempt(['email'=>$request->email,'password'=>$request->password])){
                 $user = Auth::user();
-                $responseArray = [];
                 $responseArray['token'] = $user->createToken('MyApp')->accessToken;
-                $responseArray['name'] = $user->name;
                 
                 return response()->json($responseArray,201);
     
@@ -91,4 +85,39 @@ class ApiController extends Controller
                 return response()->json(['error'=>'Unauthenticated'],203);
             }
         }
+
+          /// logout //////
+
+        public function logout(Request $request){
+            $request->user()->token()->revoke();
+            return response()->json([
+                'message' => 'Successfully logged out'
+            ]);
+        }
+
+        public function user(Request $request){
+            return response()->json($request->user());
+        }
+        
 }
+
+
+
+
+
+
+
+
+
+
+
+    // $validator = Validator::make($request->all(),[
+            //     'name'=>'required',
+            //     'email'=>'required|email',
+            //     'password'=>'required',
+            //     'c_password'=>'required|same:password'
+            // ]);
+    
+            // if($validator->fails()){
+            //     return response()->json($validator->errors(),202);
+            // }

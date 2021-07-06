@@ -19,6 +19,9 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->integer('auth-type')->nullable();
+            $table->integer('facabook_id')->nullable();
+            $table->integer('google_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
