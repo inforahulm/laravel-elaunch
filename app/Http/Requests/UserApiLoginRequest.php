@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UserApiRequest extends FormRequest
+class UserApiLoginRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,10 +27,8 @@ class UserApiRequest extends FormRequest
             'auth-type'=> 'required|in:facebook,google,others' ,
             'facebook_id'=>'required_if:auth-type,==,facebook',
             'google_id'=>'required_if:auth-type,==,google',
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-            // 'auth-type'=>['required',Rule::in(['1','2'])],
+            'email'=>'required_if:auth-type,==,others',
+            'password'=>'required_if:auth-type,==,others'
         ];
-    }
+    }      
 }

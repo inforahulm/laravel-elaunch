@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserApiLoginRequest;
 use App\Http\Requests\UserApiRequest;
+use App\Http\Resources\ApiResoure;
 use Illuminate\Http\Request;
 use App\Models\Permission;
 use Illuminate\Support\Facades\Auth;
@@ -55,32 +57,51 @@ class ApiController extends Controller
 
         ////// PASSPORT LOGIN & REGISTER /////////////
 
-        public function register(UserApiRequest $request){ 
-
-            $user= User::create([
+        public function register(Request $request){
+            $data_array = array(
                 'name' => $request['name'],
                 'email' => $request['email'],
                 'password' => Hash::make($request['password']),
                 'otp_code' => random_int(1000, 9999),
-                
-            ]);
-            Mail::to($request['email'])->send(new WelcomeMail($user));
+                'auth-type'=>$request['auth-type']
+            );
+    
+  
+        if ($request['auth-type']=='facebook') {
+            $data_array['facebook_id'] = $request['facebook_id'];
 
-            return response()->json([
+        } elseif ($request['auth-type']=='google'){
+            $data_array['google_id'] = $request['google_id'];      
+        }
+        $user= User::create($data_array);
+
+         return response()->json([
                 'message' => 'Successfully created user and Mail send!'
             ], 201);
-            
+
         }
     
         /// login //////
     
-        public function login(Request $request){ 
+        public function login(UserApiLoginRequest $request){ 
+       
             if(Auth::attempt(['email'=>$request->email,'password'=>$request->password])){
                 $user = Auth::user();
                 $responseArray['token'] = $user->createToken('MyApp')->accessToken;
-                
+
                 return response()->json($responseArray,201);
-    
+
+            }
+            elseif($user_google=User::where('google_id',$request->google_id)->whereNotNull('google_id')->first()){
+
+                $responseArray['token'] = $user_google->createToken('MyApp')->accessToken;
+                return response()->json($responseArray,201);
+
+            }elseif($user_facebook=User::where('facebook_id',$request->facebook_id)->whereNotNull('facebook_id')->first()){
+
+                $responseArray['token'] = $user_facebook->createToken('MyApp')->accessToken;
+                return response()->json($responseArray,201);
+                
             }else{
                 return response()->json(['error'=>'Unauthenticated'],203);
             }
@@ -94,9 +115,9 @@ class ApiController extends Controller
                 'message' => 'Successfully logged out'
             ]);
         }
-
-        public function user(Request $request){
-            return response()->json($request->user());
+        public function user(){
+            $users=User::all();
+            return ApiResoure::collection($users);
         }
         
 }

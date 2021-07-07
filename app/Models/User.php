@@ -23,6 +23,10 @@ class User extends Authenticatable
         'password',
         'otp_code',
         'role_id',
+        'facebook_id',
+        'google_id',
+        'auth-type'
+
     ];
 
     /**
