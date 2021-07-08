@@ -19,6 +19,7 @@ class ApiResoure extends JsonResource
             'id'=>$this->id,
             'name'=>$this->name,
             'email'=>$this->email,
+            'password'=>$this->password,
             'auth-type'=>$this->auth_type,
             'facebook_id'=>$this->facebook_id,
             'google_id'=>$this->google_id,

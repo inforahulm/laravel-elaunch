@@ -11,9 +11,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+Use App\Repositories\EmployeeRepositoryInterface;
 
 class EmployeeController extends Controller
 {
+
+    protected $employeeRepo;
+
+    public function __construct(EmployeeRepositoryInterface $employeeRepo)
+    {
+        $this->employeeRepo = $employeeRepo;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,7 +30,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::with('user')->where('user_id',Auth::id())->get();      
+        $employees = $this->employeeRepo->all();     
         return view('employees.index', compact('employees'));
     }
 
@@ -43,22 +52,15 @@ class EmployeeController extends Controller
      */
     public function store(EmployeeRequest $request)
     {
-    //    $images=$request->file('image');
-    //    foreach ($images as $image){
-    //    $filename = $image->getClientOriginalName();
-    //    $path=Storage::putFileAs('images',$image,$filename);
-
-    //    }
+ 
         $image=$request->file('image');
         $filename = $image->getClientOriginalName();
         $path=Storage::putFileAs('images',$image,$filename);
 
-        $employees = Employee::create([
-            'name' => $request->name,
-            'author' => $request->author,
-            'image'=>$filename,
-            'user_id'=>Auth::id(),
-        ]);
+        $data=$request->all();
+        $data['image']=$filename;
+
+        $this->employeeRepo->store($data);
         return redirect()->route('employees.index')->with('message', 'File Upload Successfully ');
     }
 
@@ -69,9 +71,9 @@ class EmployeeController extends Controller
      * @param \App\Models\Employee $employee
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
-    public function show(Employee $employee)
+    public function show($id)
     {
-        $employee=Employee::with('posts')->where('user_id',Auth::id())->find($employee->id);
+        $employee=$this->employeeRepo->read($id);
         return view('employees.show',compact('employee'));
     }
 
@@ -81,8 +83,9 @@ class EmployeeController extends Controller
      * @param \App\Models\Employee $employee
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
-    public function edit(Employee $employee)
+    public function edit($id)
     {
+        $employee=$this->employeeRepo->get($id);
         return view('employees.edit',compact('employee'));
     }
 
@@ -93,21 +96,21 @@ class EmployeeController extends Controller
      * @param \App\Models\Employee $employee
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(EmployeeRequest $request, Employee $employee)
+    public function update(EmployeeRequest $request, $id)
     {
-       $input=$request->all();
-
+        $employee=Employee::findOrFail($id);
         $oldname=$employee->image;
         if(Storage::exists('storage/images/'.$oldname)) {
-        unlink('storage/images/'.$oldname);
+            unlink('storage/images/'.$oldname);
         }
-
+        
         $image=$request->file('image');
         $filename = $image->getClientOriginalName();
         $path=Storage::putFileAs('images',$image,$filename);
         
-        $input['image']=$filename;
-       $employee->update($input);
+        $data=$request->all();
+        $data['image']=$filename;
+       $employee=$this->employeeRepo->update($id,$data);
        return redirect()->route('employees.index');
     }
 
@@ -117,9 +120,9 @@ class EmployeeController extends Controller
      * @param \App\Models\Employee $employee
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Employee $employee)
+    public function destroy($id)
     {
-        $employee->delete();
+        $employee=$this->employeeRepo->delete($id);
         return response()->json([
             'success'=>'record deleted'
         ]);

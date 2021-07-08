@@ -177,6 +177,7 @@ return [
         Yajra\DataTables\DataTablesServiceProvider::class,
         Yajra\DataTables\ButtonsServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
+        App\Providers\RepositoryServiceProvider::class,
 
 
     ],

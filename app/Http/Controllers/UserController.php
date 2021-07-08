@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\UsersDataTable;
-use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeMail;
-use App\Models\Permission;
+use App\Repositories\UserRepositoryInterface;
 
 class UserController extends Controller
 {
+    protected $userRepo;
+    public function __construct(UserRepositoryInterface $userRepo)
+    {
+        $this->userRepo=$userRepo;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +27,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('role')->get();
+        $users =$this->userRepo->all();
         return view('users.index', compact('users'));
     }
 
@@ -38,7 +39,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $roles = Role::pluck('title','id');
+        $roles = $this->userRepo->create();
         return view('users.create',compact('roles'));
     }
 
@@ -50,13 +51,11 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        $user= User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password']),
-            'otp_code' => random_int(1000, 9999),
-            'role_id'=>$request['role_id'],
-        ]);
+       
+        $data=$request->all();
+        $password= Hash::make($request['password']);
+        $data['password']=$password;
+        $this->userRepo->store($data);
         return redirect()->route('users.index');
 
     }
@@ -78,10 +77,11 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit($id)
     {
-        $roles = Role::pluck('title','id');
-        return view('users.edit',compact('user','roles'));
+        $user=User::findOrFail($id);
+        $roles = $this->userRepo->get($id);
+        return view('users.edit',compact('roles','user'));
     }
 
     /**
@@ -91,10 +91,15 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(Request $request, $id)
     {
-        $input =$request->all();
-        $user->update($input);
+        $user=User::findOrFail($id);
+        $request->validate([
+            'name' => 'required|string|min:2|max:200',
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            
+        ]);
+        $user=$this->userRepo->update($id,$request->all());
         return redirect()->route('users.index');
     }
 
@@ -104,9 +109,9 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(User $user)
+    public function destroy($id)
     {
-        $user->delete();
+        $user=$this->userRepo->delete($id);
         return redirect()->route('users.index');
     }
     

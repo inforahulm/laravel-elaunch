@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserApiLoginRequest;
 use App\Http\Requests\UserApiRequest;
+use App\Http\Requests\UserUpdateApiRequest;
 use App\Http\Resources\ApiResoure;
 use Illuminate\Http\Request;
 use App\Models\Permission;
@@ -67,7 +68,7 @@ class ApiController extends Controller
             );
     
   
-        if ($request['auth-type']=='facebook') {
+        if ($request['auth-type'] == 'facebook') {
             $data_array['facebook_id'] = $request['facebook_id'];
 
         } elseif ($request['auth-type']=='google'){
@@ -115,9 +116,41 @@ class ApiController extends Controller
                 'message' => 'Successfully logged out'
             ]);
         }
-        public function user(){
+
+        public function index(){
             $users=User::all();
             return ApiResoure::collection($users);
+        }
+
+        public function show($id){
+             $user=User::findOrFail($id);
+             return new ApiResoure($user);
+        }
+
+        public function update(Request $request, $id){
+            $user=User::findOrFail($id); 
+            $request->validate([
+                'email' => 'required|email|unique:users,email,'.$user->id,
+                'facebook_id'=>'required_if:auth-type,==,facebook',
+                'google_id'=>'required_if:auth-type,==,google',
+                
+            ]);
+        
+            $input=$request->all();
+         
+            $password= Hash::make($request['password']);
+            $input['password']=$password;
+            $user->update($input);
+            return new ApiResoure($user);
+            // return response()->json($input,201);
+            
+
+        }
+
+        public function destroy($id){
+            $user=User::findOrFail($id);
+            $user->delete();
+            return new ApiResoure($user);
         }
         
 }
@@ -128,17 +161,3 @@ class ApiController extends Controller
 
 
 
-
-
-
-
-    // $validator = Validator::make($request->all(),[
-            //     'name'=>'required',
-            //     'email'=>'required|email',
-            //     'password'=>'required',
-            //     'c_password'=>'required|same:password'
-            // ]);
-    
-            // if($validator->fails()){
-            //     return response()->json($validator->errors(),202);
-            // }

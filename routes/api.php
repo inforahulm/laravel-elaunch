@@ -21,6 +21,7 @@ use App\Http\Controllers\TestController;
 Route::get('/first_api',[ApiController::class,'FirstAPi']);
 Route::get('/second_api/{id}',[ApiController::class,'SecondAPi']);
 Route::post('/post_api',[ApiController::class,'PostAPi']);
+Route::get('/lists',[ApiController::class,'list']);
 
 
 Route::post('/register',[ApiController::class,'register']); 
@@ -28,10 +29,13 @@ Route::post('/register',[ApiController::class,'register']);
 Route::post('/login',[ApiController::class,'login']);
 Route::get('/login',[ApiController::class,'login'])->name('login');
 
-Route::middleware('auth:api')->group(function () {
-    Route::get('/lists',[ApiController::class,'list']);
+Route::prefix('admin')->middleware('auth:api')->group(function () {
     Route::get('/logout',[ApiController::class,'logout']);
-    Route::get('/user',[ApiController::class,'user']);
+    Route::get('/user',[ApiController::class,'index']);
+    Route::get('/user/{id}',[ApiController::class,'show']);
+    Route::put('/user/{id}',[ApiController::class,'update']);
+    Route::delete('/user/{id}',[ApiController::class,'destroy']);
+
 
 });
 

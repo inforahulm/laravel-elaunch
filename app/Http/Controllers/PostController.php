@@ -7,9 +7,22 @@ use App\Models\Employee;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Repositories\PostRepositoryInterface;
 
 class PostController extends Controller
 {
+
+    protected $post;
+
+    /**
+     * PostController constructor.
+     *
+     * @param PostRepositoryInterface $post
+     */
+    public function __construct(PostRepositoryInterface $post)
+    {
+        $this->post = $post;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +30,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts=Post::with(['user','employee'])->where('user_id',Auth::id())->get();
+        $posts=$this->post->all();
         return view('posts.index',compact('posts'));
     }
 
@@ -28,7 +41,7 @@ class PostController extends Controller
      */
     public function create()
     {
-      $employees=Employee::where('user_id',Auth::id())->get();
+      $employees=$this->post->create();
       return view('posts.create',compact('employees'));
     }
 
@@ -40,13 +53,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $post = Post::create([
-            'name' => $request->name,
-            'comment' => $request->comment,
-            'employee_id'=>$request->employee_id,
-            'user_id'=>Auth::id(),
-        ]);
-
+       $this->post->store($request->all());
         return redirect()->route('posts.index')->with('message', 'File Upload Successfully ');
     }
 
@@ -87,9 +94,9 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        $post->delete();
+      $this->post->delete($id);
         return response()->json([
             'success'=>'delete record'
         ]);

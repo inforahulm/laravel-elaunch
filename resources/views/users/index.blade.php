@@ -33,7 +33,7 @@
                                 <a href="{{route('users.edit',$user->id)}}" class="btn btn-sm btn-warning">Edit</a>
                                 @endif 
                                 @if(in_array('user_delete',getUserPermissions()))
-                                <form action="{{ route('roles.destroy', $user->id) }}" class="d-inline-block" method="post">
+                                <form action="{{ route('users.destroy', $user->id) }}" class="d-inline-block" method="post">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" onclick="return confirm('Are you sure?')" class="btn btn-sm btn-danger">Delete</button>
