@@ -7,6 +7,7 @@
 
         <div class="card-body">
             <form method="POST" action="{{ route('users.update', $user->id) }}">
+            <input type="hidden" value="{{ $user->id }}" name="user_id">
                 @csrf
                 @method('PUT')
                 <div class="form-group row">

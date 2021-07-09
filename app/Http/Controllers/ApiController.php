@@ -130,10 +130,7 @@ class ApiController extends Controller
         public function update(Request $request, $id){
             $user=User::findOrFail($id); 
             $request->validate([
-                'email' => 'required|email|unique:users,email,'.$user->id,
-                'facebook_id'=>'required_if:auth-type,==,facebook',
-                'google_id'=>'required_if:auth-type,==,google',
-                
+                'email' => 'required|email|unique:users,email,'.$user->id,  
             ]);
         
             $input=$request->all();

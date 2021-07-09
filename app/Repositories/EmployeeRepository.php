@@ -2,10 +2,10 @@
 namespace App\Repositories;
 use App\Models\Employee;
 Use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class EmployeeRepository implements EmployeeRepositoryInterface
 {
+    
     public function all()
     {
         return Employee::with('user')->where('user_id',Auth::id())->get();      

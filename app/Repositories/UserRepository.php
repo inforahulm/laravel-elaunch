@@ -2,6 +2,8 @@
 namespace App\Repositories;
 use App\Models\User;
 use App\Models\Role;
+use Illuminate\Support\Facades\Hash;
+
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -22,8 +24,10 @@ class UserRepository implements UserRepositoryInterface
 
     public function store(array $data)
     {
-    $data['otp_code']=random_int(1000, 9999);
-    return User::create($data);
+      $password= Hash::make($data['password']);
+      $data['password']=$password;
+      $data['otp_code']=random_int(1000, 9999);
+      return User::create($data);
     }
 
     public function delete($id)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -51,13 +52,8 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-       
-        $data=$request->all();
-        $password= Hash::make($request['password']);
-        $data['password']=$password;
-        $this->userRepo->store($data);
+        $this->userRepo->store($request->all());
         return redirect()->route('users.index');
-
     }
 
     /**
@@ -91,14 +87,8 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update($id,UpdateUserRequest $request)
     {
-        $user=User::findOrFail($id);
-        $request->validate([
-            'name' => 'required|string|min:2|max:200',
-            'email' => 'required|email|unique:users,email,'.$user->id,
-            
-        ]);
         $user=$this->userRepo->update($id,$request->all());
         return redirect()->route('users.index');
     }
@@ -118,13 +108,9 @@ class UserController extends Controller
 
     public function register(UserRequest $request)
     {
-        $user= User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password']),
-            'otp_code' => random_int(1000, 9999),
-        ]);
-      
+
+        $this->userRepo->store($request->all());
+
         Mail::to($request['email'])->send(new WelcomeMail($user));
 
         return redirect()->route('verifyotp',['email'=>$request->email]);

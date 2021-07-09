@@ -1,15 +1,26 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
-use App\Http\Requests\TestRequest;
-use App\Http\Requests\UpdateTestRequest;
-use App\Http\Resources\TestResource;
-use App\Models\Test;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\RepoUserRequest;
+use App\Repositories\UserApiRepositoryInterface;
+use DB;
 
-class TestController extends Controller
+
+
+class UserController extends Controller
 {
+
+    protected $userApiRepo;
+
+    public function __construct(UserApiRepositoryInterface $userApiRepo)
+    {
+        $this->userApiRepo=$userApiRepo;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,8 +28,7 @@ class TestController extends Controller
      */
     public function index()
     {
-        $test=Test::all();
-        return TestResource::collection($test);
+        return $this->userApiRepo->all();
     }
 
     /**
@@ -28,7 +38,7 @@ class TestController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -37,62 +47,57 @@ class TestController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(TestRequest $request)
+    public function store(RepoUserRequest $request)
     {
-        $test = Test::create([
-            'name' => $request->name,
-        ]);
-        return new TestResource($test);
+        return $this->userApiRepo->store($request->all());
     }
-
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Test  $test
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $test=Test::findOrFail($id);
-        return new TestResource($test);
+      return $this->userApiRepo->get($id);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Test  $test
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Test $test)
+    public function edit($id)
     {
-    
+        
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Test  $test
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $test=Test::findOrFail($id);
-        $input=$request->all();
-        $test->update($input);
-        return new TestResource($test);
+        $request->validate([
+            'email' => 'required|email|unique:users,email,' . $id
+        ]);
+        return $this->userApiRepo->update($id,$request->all());
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Test  $test
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
     {
-        $test=Test::findOrFail($id);
-        $test->delete();
-        return new TestResource($test);
+        return $this->userApiRepo->delete($id);
     }
+    
 }

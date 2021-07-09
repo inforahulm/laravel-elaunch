@@ -74,8 +74,6 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'otp_code' => random_int(1000, 9999),
-         
-
         ]);
       
 //         Mail::to($data['email'])->send(new WelcomeMail($user));

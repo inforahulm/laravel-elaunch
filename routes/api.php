@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\TestController;
+use App\Http\Controllers\API\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -44,3 +46,5 @@ Route::post('/test',[TestController::class,'store']);
 Route::get('/test/{id}',[TestController::class,'show']); 
 Route::put('/test/{id}',[TestController::class,'update']); 
 Route::delete('/test/{id}',[TestController::class,'destroy']); 
+
+Route::resource('users',UserController::class);
