@@ -2,8 +2,14 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+
+
 
 class Handler extends ExceptionHandler
 {
@@ -31,11 +37,70 @@ class Handler extends ExceptionHandler
      * Register the exception handling callbacks for the application.
      *
      * @return void
+     */      
+    
+   /**
+     * Report or log an exception.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     *
+     * @throws \Throwable
      */
-    public function register()
+    public function report(Throwable $exception)
     {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
+        parent::report($exception);
     }
+
+        /**
+     * Render an exception into an HTTP response.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Throwable  $exception
+     * @return \Symfony\Component\HttpFoundation\Response
+     *
+     * @throws \Throwable
+     */
+
+    public function render($request, Throwable $exception)
+    {
+        dd($exception);
+        if($request->expectsJson()){
+          if($exception instanceof ModelNotFoundException){
+
+            return response()->json([
+                'error'=>'modal not found'
+            ],400);
+        }
+        if($exception instanceof NotFoundHttpException){
+
+            return response()->json([
+                'error'=>'incorrect route'
+            ],404);
+        }
+
+        if($exception instanceof MethodNotAllowedHttpException){
+
+            return response()->json([
+                'error'=>' method not supported for this route'
+            ],405);
+        }
+
+
+        if($exception instanceof ValidationException){
+            foreach ($exception->errors() as $field => $message) {
+                      $data[$field] = $message[0];
+                     }
+
+            return response()->json([
+                'message'=>$data,
+                'error'=>'The given data was invalid'
+            ],404);
+        }
+
+    }
+    return parent::render($request, $exception);
+    
+    }
+
 }

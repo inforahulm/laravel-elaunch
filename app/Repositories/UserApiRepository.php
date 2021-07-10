@@ -3,7 +3,7 @@ namespace App\Repositories;
 use App\Models\User;
 use App\Traits\ResponceAPI;
 use Illuminate\Support\Facades\Hash;
-use DB;
+use Illuminate\support\facades\DB;
 
 class UserApiRepository implements UserApiRepositoryInterface
 {
@@ -27,23 +27,23 @@ use ResponceAPI;
     public function get($id)
     {
         DB::beginTransaction();
-        try {
+    try {
             $user = User::findOrFail($id);
-            // User::create(['name' =>'vikas','email' =>'vikaooeh@gmail.com','password' =>'vikas@gmail.com']);
             DB::commit();
             return $this->success("User Detail",$user);
 
-        } catch(\Exception $e) {
+        } catch(\Exception $exception) {
             DB::rollback();
-              return $this->error($e->getMessage());
-        }
+              return $this->error($exception->getMessage());
+        } 
+         
     }
 
     public function store(array $data)
     {
 
         DB::beginTransaction();
-  try {
+    try {
       $password= Hash::make($data['password']);
       $data['password']=$password;
 
@@ -60,7 +60,7 @@ use ResponceAPI;
     public function delete($id)
     {
         DB::beginTransaction();
-        try {
+    try {
         $user = User::findOrFail($id);
 
          $user= User::destroy($id); 

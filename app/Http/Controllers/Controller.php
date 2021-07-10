@@ -12,3 +12,18 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }
 
+
+
+// use Facade\FlareClient\Http\Response;
+// use Illuminate\Auth\Access\AuthorizationException;
+// use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+// use Illuminate\Auth\AuthenticationException;
+
+//         if($exception instanceof AccessDeniedHttpException || $exception instanceof AuthorizationException){
+//             return response()->json([
+//                 'success' => false,
+//                 'errors' => new \StdClass(),
+//                 'message' => $exception->getMessage(),
+//             ], 403);
+//         }
+
